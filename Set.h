@@ -77,8 +77,8 @@ public:
 		}
 	}
 
-	void printInFile(std::ofstream& file) {
-		file << size << std::endl;
+	void printInFile(std::ofstream& file, int32_t amountOfItem) {
+		file << amountOfItem << std::endl;
 		for (int32_t i = 0; i < capacity; i++) {
 			if (arr[i].first == NULL) continue;
 			else file << arr[i].first << " " << arr[i].second << std::endl;
