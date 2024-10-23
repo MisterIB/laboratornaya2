@@ -265,11 +265,11 @@ void routeSearch(Hash& routes, string& currentServer, const string& destinationS
 				minDelay = currentDelay;
 				Path = currentPath;
 			}
-			return;
+			currentDelay = 0;
 		}
 		else if (tempPair.delay == NULL) break;
 		else {
-			currentPath = currentPath + " " + tempPair.second;
+			currentPath = currentPath + "->" + tempPair.second;
 			currentDelay += tempPair.delay;
 			currentServer = tempPair.second;
 			saveForeachState = routes.itemsAmountForeach;
@@ -281,8 +281,11 @@ void routeSearch(Hash& routes, string& currentServer, const string& destinationS
 }
 
 //routes = {("A", "B"): 1, ("B", "C"): 2}, initial server = "A", destination server = "C"
-void printResult(int32_t delay, string& Path) {
-	cout << "Задержка: " << delay << " Путь: " << Path;
+//routes = { ("A", "B") : 1, ("B", "C") : 2, ("A", "C") : 4 }, initial server = "A", destination server = "C"
+//routes = { ("A", "B") : 1, ("B", "C") : 2, ("Ab", "C") : 4 }, initial server = "A", destination server = "C"
+
+void printResult(int32_t delay, string& Path, string& initialServer, string& destinationServer) {
+	cout << "Задержка: " << delay << " Путь: " << initialServer << Path << "->" << destinationServer;
 }
 
 void readInputValues(istringstream& inputDataStream) {
@@ -293,10 +296,11 @@ void readInputValues(istringstream& inputDataStream) {
 	readRoute(inputDataStream, routes);
 	getline(inputDataStream, tempStr, '=');
 	if (tempStr == " initial server ") initialServer = readInitialServer(inputDataStream);
+	string initialServerSave = initialServer;
 	getline(inputDataStream, tempStr, '=');
 	if (tempStr == ", destination server ") destinationServer = readDestinationServer(inputDataStream);
 	routeSearch(routes, initialServer, destinationServer, minDelay, currentDelay, currentPath, Path);
-	printResult(minDelay, Path);
+	printResult(minDelay, Path, initialServerSave, destinationServer);
 }
 
 void readRoutes() {
