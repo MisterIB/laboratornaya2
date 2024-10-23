@@ -40,8 +40,13 @@ public:
 	T pop() {
 		if (is_empty()) return NULL;
 		Node<T>* temp = head;
-		head = head->next;
-		head->prev = nullptr;
+		if (head->next == nullptr) {
+			head = nullptr;
+		}
+		else {
+			head = head->next;
+			head->prev = nullptr;
+		}
 		T value = temp->value;
 		delete temp;
 		return value;
