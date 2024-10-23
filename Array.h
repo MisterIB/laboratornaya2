@@ -5,7 +5,7 @@
 
 template <typename T>
 struct Array {
-public://Изменить
+public:
 	T* arr;
 	int32_t capacity, currentSize;
 
