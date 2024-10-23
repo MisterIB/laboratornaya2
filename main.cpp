@@ -416,11 +416,6 @@ void executingSetCommands(int argc, const char** argv) {
 
 int main(int argc, const char** argv) {
 	setlocale(LC_ALL, "RUSSIAN");
-	argc = 5;
-	argv[1] = "--file";
-	argv[2] = "file.data";
-	argv[3] = "--query";
-	argv[4] = "'SET_AT Set 4545 20'";
 	try {
 		if (argc > 2) executingSetCommands(argc, argv);
 		else {
