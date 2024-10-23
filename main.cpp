@@ -334,6 +334,10 @@ void checkForExtraCharacters(Data& data) {
 	if (data.secondValue[data.secondValue.size() - 1] == '\'') data.secondValue.erase(data.secondValue.size() - 1);
 }
 
+void checkForExtraCharacters(string& item) {
+	if (item[0] == '\n') item.erase(0, 1);
+}
+
 void readInputData(Data& data, string inputData) {
 	string name;
 	int32_t i = 0;
@@ -352,17 +356,26 @@ void readInputData(Data& data, string inputData) {
 	if (i == 3) data.secondValue = name;
 }
 
-void performingAnActionSet(const Data& data, Set set) {
-	if (data.command == "SETADD") set.SETADD(stoi(data.firstValue), stoi(data.secondValue));
-	else if (data.command == "SETDEL") set.SETDEL(stoi(data.firstValue), stoi(data.secondValue));
-	else if (data.command == "SET_AT") set.SET_AT(stoi(data.firstValue), stoi(data.secondValue));
+void performingAnActionSet(const Data& data, Set set, int32_t& amountOfItem) {
+	if (data.command == "SETADD") {
+		set.SETADD(stoi(data.firstValue), stoi(data.secondValue));
+		amountOfItem++;
+	}
+	else if (data.command == "SETDEL") {
+		set.SETDEL(stoi(data.firstValue), stoi(data.secondValue));
+		amountOfItem--;
+	}
+	else if (data.command == "SET_AT") {
+		if (set.SET_AT(stoi(data.firstValue), stoi(data.secondValue)) == 0) cout << "false";
+		else cout << "true";
+	}
 	else throw runtime_error("Incorrect input command");
 }
 
-void writeToFileSet(const string& nameFile, Set& set) {
+void writeToFileSet(const string& nameFile, Set& set, int32_t amountOfItem) {
 	ofstream dataFile(nameFile);
 	chekTheOpenFile(dataFile);
-	set.printInFile(dataFile);
+	set.printInFile(dataFile, amountOfItem);
 	dataFile.close();
 }
 
@@ -370,15 +383,19 @@ void readFromFileInSet(const string& nameFile, Data& data) {
 	ifstream fileData(nameFile);
 	chekTheOpenFile(fileData);
 	int32_t amountOfItems;
-	cin >> amountOfItems;
-	Set set(amountOfItems);
+	fileData >> amountOfItems;
+	int32_t amountOfItem = amountOfItems;
+	Set set(1000);
 	string item1, item2;
 	for (; amountOfItems > 0;  amountOfItems--) {
+		getline(fileData, item1, ' ');
+		getline(fileData, item2);
+		checkForExtraCharacters(item1);
 		set.SETADD(stoi(item1), stoi(item2));
 	}
 	fileData.close();
-	performingAnActionSet(data, set);
-	writeToFileSet(nameFile, set);
+	performingAnActionSet(data, set, amountOfItem);
+	writeToFileSet(nameFile, set, amountOfItem);
 }
 
 void executingSetCommands(int argc, const char** argv) {
@@ -399,10 +416,17 @@ void executingSetCommands(int argc, const char** argv) {
 
 int main(int argc, const char** argv) {
 	setlocale(LC_ALL, "RUSSIAN");
-	menu();
+	argc = 5;
+	argv[1] = "--file";
+	argv[2] = "file.data";
+	argv[3] = "--query";
+	argv[4] = "'SET_AT Set 4545 20'";
 	try {
 		if (argc > 2) executingSetCommands(argc, argv);
-		hadleCommand();
+		else {
+			menu();
+			hadleCommand();		
+		}
 	}
 	catch (exception& e) {
 		cout << e.what();
