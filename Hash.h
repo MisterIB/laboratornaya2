@@ -98,7 +98,7 @@ public:
 	int32_t itemsAmountForeach;
 
 	Hash() {
-		capacity = 100;
+		capacity = 1000;
 		amountOfItems = 0;
 		itemsAmountForeach = 0;
 		arr = new HList[capacity];
@@ -127,7 +127,7 @@ public:
 	PAIR foreach(std::string first) {
 		for (; itemsAmountForeach < capacity; itemsAmountForeach++) {
 			if (arr[itemsAmountForeach].foreach(first).delay == NULL) continue;
-			return arr[itemsAmountForeach].foreach(first);
+			return arr[itemsAmountForeach++].foreach(first);
 		}
 		if (itemsAmountForeach == capacity) itemsAmountForeach = 0;
 		PAIR NullPair;
