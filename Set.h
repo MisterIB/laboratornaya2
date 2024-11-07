@@ -4,21 +4,11 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include "List.h"
 
 struct Set {
-private:
-	struct Pair {
-		int32_t first;
-		int32_t second;
-
-		Pair(int32_t first, int32_t second) : first(first), second(second) {}
-
-		Pair() : first(NULL), second(NULL) {}
-	};
-
 	int32_t size, capacity;
-	Pair* arr;
-
+	List<int32_t>* arr;
 	int32_t hashFunction(std::string key) {
 		const int32_t k = 41, mod = 1e9 + 9;
 		int64_t h = 0, m = 1;
@@ -35,7 +25,7 @@ public:
 	Set(int32_t maxSize) {
 		size = 0;
 		capacity = maxSize;
-		arr = new Pair[capacity];
+		arr = new List<int32_t>[capacity];
 	}
 
 	int32_t SIZE() {
@@ -46,42 +36,33 @@ public:
 		return size == 0;
 	}
 
-	void SETADD(int32_t first, int32_t second) {
-		std::string key = std::to_string(first) + std::to_string(second);
+	void SETADD(int32_t value) {
+		std::string key = std::to_string(value);
 		int32_t index = hashFunction(key);
-		arr[index].first = first;
-		arr[index].second = second;
-		size++;
+		if (arr[index].is_empty() or arr[index].find(value) == nullptr) {
+			arr[index].push_back(value);
+			size++;
+		}
 	}
 
-	void SETDEL(int32_t first, int32_t second) {
-		std::string key = std::to_string(first) + std::to_string(second);
+	void SETDEL(int32_t value) {
+		std::string key = std::to_string(value);
 		int32_t index = hashFunction(key);
-		arr[index].first = NULL;
-		arr[index].second = NULL;
+		arr[index].remove(value);
 		size--;
 	}
 
-	bool SET_AT(int32_t first, int32_t second) {
-		std::string key = std::to_string(first) + std::to_string(second);
+	bool SET_AT(int32_t value) {
+		std::string key = std::to_string(value);
 		int32_t index = hashFunction(key);
-		if (arr[index].first == first and arr[index].second == second) return true;
-		if (arr[index].first == NULL) return false;
-		
-	}
-
-	void print() {
-		for (int32_t i = 0; i < capacity; i++) {
-			if (arr[i].first == NULL) continue;
-			else std::cout << arr[i].first << " " << arr[i].second << std::endl;
-		}
+		if (arr[index].find(value) != nullptr) return true;
+		return false;
 	}
 
 	void printInFile(std::ofstream& file, int32_t amountOfItem) {
 		file << amountOfItem << std::endl;
 		for (int32_t i = 0; i < capacity; i++) {
-			if (arr[i].first == NULL) continue;
-			else file << arr[i].first << " " << arr[i].second << std::endl;
+			arr[i].printInFileq(file);
 		}
 	}
 };
