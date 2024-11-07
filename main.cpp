@@ -8,6 +8,7 @@
 #include "Hash.h"
 #include "Set.h"
 #include "Pair.h"
+#include "SetPair.h"
 
 using namespace std;
 
@@ -94,7 +95,7 @@ void OperatingWithSetHelp() {
 	cout << "Запуск задания в консоли : ./<имя вашей программы> --file <путь до файла с данными> --query <запрос к файлу с данными>" << endl;
 }
 
-void readInputValuesTurtle(int32_t amountOfTurtle, Set& turtles) {
+void readInputValuesTurtle(int32_t amountOfTurtle, SetP& turtles) {
 	int32_t inputValueFirst, inputValueSecond;
 	for (int32_t i = 0; i < amountOfTurtle; i++) {
 		cin >> inputValueFirst;
@@ -103,7 +104,7 @@ void readInputValuesTurtle(int32_t amountOfTurtle, Set& turtles) {
 	}
 }
 
-void checkingTurtles(int32_t amountOfTurtle, Set& turtles) {
+void checkingTurtles(int32_t amountOfTurtle, SetP& turtles) {
 	int32_t truthsAmount = 0;
 	for (int32_t i = 0, j = amountOfTurtle - 1; i < amountOfTurtle; i++, j--) {
 		if (turtles.SET_AT(i, j)) truthsAmount++;
@@ -116,7 +117,7 @@ void taskAboutTurtles() {
 	cout << "Введите количество черепах: ";
 	cin >> amountOfTurtle;
 	cout << "Введите значения: " << endl;
-	Set turtles(1000);
+	SetP turtles(1000);
 	readInputValuesTurtle(amountOfTurtle, turtles);
 	checkingTurtles(amountOfTurtle, turtles);
 }
@@ -181,7 +182,7 @@ void readingInputString() {
 	Array<char> arr;
 	cin >> character;
 	while (character != '\n') {
-		arr.push_back(character);
+		if (character != ' ') arr.push_back(character);
 		character = getchar();
 	}
 	sort(arr);
@@ -357,20 +358,19 @@ void readInputData(Data& data, string inputData) {
 	}
 	if (i == 1) data.nameStructure = name;
 	if (i == 2) data.firstValue = name;
-	if (i == 3) data.secondValue = name;
 }
 
 void performingAnActionSet(const Data& data, Set set, int32_t& amountOfItem) {
 	if (data.command == "SETADD") {
-		set.SETADD(stoi(data.firstValue), stoi(data.secondValue));
-		amountOfItem++;
+		if (!set.SET_AT(stoi(data.firstValue))) amountOfItem++;
+		set.SETADD(stoi(data.firstValue));
 	}
 	else if (data.command == "SETDEL") {
-		set.SETDEL(stoi(data.firstValue), stoi(data.secondValue));
-		amountOfItem--;
+		if (set.SET_AT(stoi(data.firstValue))) amountOfItem--;
+		set.SETDEL(stoi(data.firstValue));
 	}
 	else if (data.command == "SET_AT") {
-		if (set.SET_AT(stoi(data.firstValue), stoi(data.secondValue)) == 0) cout << "false";
+		if (!set.SET_AT(stoi(data.firstValue))) cout << "false";
 		else cout << "true";
 	}
 	else throw runtime_error("Incorrect input command");
@@ -390,12 +390,10 @@ void readFromFileInSet(const string& nameFile, Data& data) {
 	fileData >> amountOfItems;
 	int32_t amountOfItem = amountOfItems;
 	Set set(1000);
-	string item1, item2;
+	string item1;
 	for (; amountOfItems > 0;  amountOfItems--) {
-		getline(fileData, item1, ' ');
-		getline(fileData, item2);
-		checkForExtraCharacters(item1);
-		set.SETADD(stoi(item1), stoi(item2));
+		fileData >> item1;
+		set.SETADD(stoi(item1));
 	}
 	fileData.close();
 	performingAnActionSet(data, set, amountOfItem);
